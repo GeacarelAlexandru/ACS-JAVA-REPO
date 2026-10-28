@@ -154,3 +154,10 @@ body {
     color: #ef4444;
     font-size: 0.85rem;
 }
+
+.post img,
+.post video {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-top: 0.75rem;
+}
