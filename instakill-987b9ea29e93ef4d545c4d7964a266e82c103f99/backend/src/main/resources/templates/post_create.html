@@ -14,8 +14,38 @@
                 <input type="text" th:field="*{imageUrl}" placeholder="https://..."/>
             </label>
             <div class="error" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></div>
-            <button type="submit">Publish</button>
+            <label>Or upload a file (jpg, png, gif, webp, mp4, mov, webm)
+                <input type="file" id="mediaFile" accept="image/*,video/mp4,video/quicktime,video/webm"/>
+            </label>
+            <div class="error" id="uploadError"></div>
+            <button type="submit" id="publishButton">Publish</button>
         </form>
+        <script>
+            (function () {
+                var fileInput = document.getElementById('mediaFile');
+                var urlInput = document.getElementById('imageUrl');
+                var errorBox = document.getElementById('uploadError');
+                var publishButton = document.getElementById('publishButton');
+                fileInput.addEventListener('change', function () {
+                    var file = fileInput.files[0];
+                    if (!file) { return; }
+                    errorBox.textContent = '';
+                    publishButton.disabled = true;
+                    var data = new FormData();
+                    data.append('file', file);
+                    fetch('/api/media', { method: 'POST', body: data, credentials: 'same-origin' })
+                        .then(function (res) {
+                            return res.json().then(function (body) {
+                                if (!res.ok) { throw new Error(body.detail || 'Upload failed'); }
+                                return body;
+                            });
+                        })
+                        .then(function (body) { urlInput.value = body.mediaUrl; })
+                        .catch(function (err) { errorBox.textContent = err.message; fileInput.value = ''; })
+                        .finally(function () { publishButton.disabled = false; });
+                });
+            })();
+        </script>
     </section>
 </div>
 </body>

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="postMedia(url)" th:if="${url != null}">
+    <video th:if="${#strings.endsWith(#strings.toLowerCase(url), '.mp4') or #strings.endsWith(#strings.toLowerCase(url), '.mov') or #strings.endsWith(#strings.toLowerCase(url), '.webm')}"
+           th:src="${url}" controls preload="metadata"></video>
+    <img th:unless="${#strings.endsWith(#strings.toLowerCase(url), '.mp4') or #strings.endsWith(#strings.toLowerCase(url), '.mov') or #strings.endsWith(#strings.toLowerCase(url), '.webm')}"
+         th:src="${url}" alt="Post image"/>
+</th:block>
+</body>
+</html>
