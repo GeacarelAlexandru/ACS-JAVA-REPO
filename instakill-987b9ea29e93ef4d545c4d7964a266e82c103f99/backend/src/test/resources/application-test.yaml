@@ -20,3 +20,7 @@ instakill:
 
 media:
   base-path: build/test-media
+
+notifications:
+  ntfy:
+    enabled: false
