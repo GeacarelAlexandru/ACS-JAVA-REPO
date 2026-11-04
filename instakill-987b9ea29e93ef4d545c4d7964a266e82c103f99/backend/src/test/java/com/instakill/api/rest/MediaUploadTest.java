@@ -13,6 +13,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -48,6 +53,35 @@ class MediaUploadTest {
         mockMvc.perform(get(mediaUrl))
                 .andExpect(status().isOk())
                 .andExpect(content().bytes(bytes));
+    }
+
+    @Test
+    void uploadedImageIsResizedToMaxWidth() throws Exception {
+        Cookie token = registerAndGetToken("mediauser3", "media3@example.com");
+        ByteArrayOutputStream encoded = new ByteArrayOutputStream();
+        ImageIO.write(new BufferedImage(900, 450, BufferedImage.TYPE_INT_RGB), "png", encoded);
+
+        MvcResult result = mockMvc.perform(multipart("/api/media")
+                        .file(new MockMultipartFile("file", "photo.png", "image/png", encoded.toByteArray()))
+                        .cookie(token))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String mediaUrl = objectMapper.readTree(result.getResponse().getContentAsString()).get("mediaUrl").asText();
+        byte[] served = mockMvc.perform(get(mediaUrl)).andExpect(status().isOk()).andReturn().getResponse().getContentAsByteArray();
+        BufferedImage stored = ImageIO.read(new ByteArrayInputStream(served));
+        assertThat(stored.getWidth()).isEqualTo(300);
+        assertThat(stored.getHeight()).isEqualTo(150);
+    }
+
+    @Test
+    void rejectsImageExtensionWithNonImageBytes() throws Exception {
+        Cookie token = registerAndGetToken("mediauser4", "media4@example.com");
+
+        mockMvc.perform(multipart("/api/media")
+                        .file(new MockMultipartFile("file", "fake.png", "image/png", new byte[]{1, 2, 3}))
+                        .cookie(token))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

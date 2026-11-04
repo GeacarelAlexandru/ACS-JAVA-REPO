@@ -355,10 +355,18 @@ async function logout() {
   margin-bottom: 0.75rem;
 }
 
-.post img,
 .post video {
   margin-top: 0.75rem;
   width: 100%;
+  border-radius: 12px;
+}
+
+/* Images are already processed to max 300px wide on the server: show them at their real size. */
+.post img {
+  display: block;
+  margin-top: 0.75rem;
+  width: auto;
+  max-width: 100%;
   border-radius: 12px;
 }
 

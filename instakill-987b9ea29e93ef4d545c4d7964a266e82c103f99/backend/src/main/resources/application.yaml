@@ -26,6 +26,16 @@ management:
         include: health,info
 media:
   base-path: media
+image-processing:
+  max-width: 300
+  watermark-text: Instakill Demo
+notifications:
+  ntfy:
+    enabled: true
+    base-url: https://ntfy.sh
+    # Public topic: anyone who knows the name can read it. Subscribe at https://ntfy.sh/<topic>
+    topic: instakill-demo-acs-sibiu
+    timeout-millis: 5000
 instakill:
   jwt:
     secret: change-me-change-me-change-me-change-me-change-me-secret-key-1234

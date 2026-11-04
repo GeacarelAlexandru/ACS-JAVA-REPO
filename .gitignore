@@ -3,4 +3,7 @@
 build/
 node_modules/
 *.db
-media/
+# Uploaded files only. A bare "media/" would also ignore the Java package com/instakill/media.
+/media/
+/instakill-*/media/
+/instakill-*/backend/media/
